@@ -9,17 +9,30 @@ public class Rol implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer idRol;
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
     private String description;
 
+    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "rol")
+    @JsonIgnoreProperties("rol")
+    private list<User> users;
 
-    public Integer getId() {
-        return id;
+    @ManyToMany
+    @JoinTable(
+            name = "permissions_rol",
+            joinColumns = @JoinColumn(name = "idRol"),
+            inverseJoinColumns = @JoinColumn(name = "idPermission")
+    )
+    private Set<Permission> permissions;
+
+
+    public Integer getIdRol() {
+        return idRol;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIdRol(Integer id) {
+        this.idRol = id;
     }
 
     public String getName() {
@@ -36,5 +49,18 @@ public class Rol implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Permission> getPermissions() { return permissions; }
+
+    public void setPermissions(Set<Permission> permissions) { this.permissions = permissions; }
+
+
+    public list<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(list<User> users) {
+        this.users = users;
     }
 }

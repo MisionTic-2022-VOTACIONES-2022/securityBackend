@@ -11,18 +11,22 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer idUser;
+    @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "idRol")
+    @JsonIgnoreProperties("users")
+    private Rol rol;
 
 
     public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+        return getIdUser();
     }
 
     public String getNickname() {
@@ -48,4 +52,9 @@ public class User implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Rol getRol() { return rol; }
+
+    public void setRol(Rol rol) { this.rol = rol; }
+
 }

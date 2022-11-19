@@ -2,6 +2,7 @@ package com.misiontic2022.grupo11.securityBackend.controllers;
 
 import com.misiontic2022.grupo11.securityBackend.models.User;
 import com.misiontic2022.grupo11.securityBackend.services.UserServices;
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +22,31 @@ public class UserController {
         return this.userServices.index();
     }
 
-    @GetMapping("/{id}")
-
+    @GetMapping("/by_id/{id}")
     public Optional<User> getUserById(@PathVariable("id")int id){
         return this.userServices.show(id);
     }
+
+    @GetMapping("/by_nickname/{nickname}")
+    public Optional<User> getUserByNickname(@PathVariable("nickname") String nickname){
+        retunr this.userServices.showByNickname(nickname);
+    }
+
+    @GetMapping("/by_email{email}")
+    public Optional<User> getUserByEmail(@PathVariable("email") String email){
+        return this.userServices.showByEmail(email);
+    }
+
 
     @PostMapping("/insert")
     @ResponseStatus(HttpStatus.CREATED)
     public User insertUser(@RequestBody User user){
         return this.userServices.create(user);
+    }
+
+    @PostMapping("/login")
+    public User loginUser(@RequestBody User user){
+        return this.userServices.login(user);
     }
 
     @PutMapping("/update/{id}")

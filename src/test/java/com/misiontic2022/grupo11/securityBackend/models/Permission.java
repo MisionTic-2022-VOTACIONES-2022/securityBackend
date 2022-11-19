@@ -10,17 +10,22 @@ public class Permission implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer idPermission;
+    @Column(name = "url", nullable = false, unique = true)
     private String url;
+    @Column(name = "method", nullable = false)
     private String method;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Set<Rol> roles;
 
 
     public Integer getId() {
-        return id;
+        return getIdPermission();
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.setIdPermission(id);
     }
 
     public String getUrl() {
@@ -37,5 +42,13 @@ public class Permission implements Serializable {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public Set<Rol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
     }
 }
