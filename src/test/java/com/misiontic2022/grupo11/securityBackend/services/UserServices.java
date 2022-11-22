@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.set;
 
 @Service
 /**
@@ -33,15 +34,27 @@ public class UserServices {
      * @return
      */
     public Optional<User> show(int id){
-        return this.userRepository.findById(id);
+        Optional<User> user = this.userRepository.findById(id);
+        if(user.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User.id does not exist in db");
+        return user;
     }
 
     public Optional<User> showByNickname(String nickname) {
-        return this.userRepository.findByNickname(nickname);
+        Optional<User> user = this.userRepository.findByNickname(nickname);
+        if(user.isEmpty())
+            throw new ResponseStatusException(httpStatus.NOT_FOUND, "" +
+                "User.nickname requested does not exist in database");
+        return user;
     }
 
     public Optional<User> showByEmail(String email) {
-        return this.userRepository.findByEmail(email);
+        Optional<User> user =  this.userRepository.findByEmail(email);
+        if(user.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "User.email requested does not exist in database");
+        return user;
     }
 
 
@@ -51,22 +64,28 @@ public class UserServices {
      * @return
      */
     public User create(User newUser){
-        if (newUser.getId()== null) {
-            if (newUser.getEmail() != null && newUser.getNickname() != null && newUser.getPassword() != null) {
-                newUser.setPassword(this.convertToSHA256(newUser.getPassword()));
-            }
+        if (newUser.getId()) != nul){
+            Optional<User> user = this.userRepository.findById(newUser.getId());
+            if(user.isPresent())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "User.id is already in the database, Remove from request");
+        }
+       if (newUser.getEmail() != null && newUser.getNickname() != null &&
+                newUser.getPassword() != null && newUser.getRol() != null) {
+            Optional<User> tempUser = this.showByNickname(newUser.getNickname());
+            if(tempUser.isPresent())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "User.nickname is already in the database, Remove from request");
+            tempUser = this.showByEmail(newUser.getEmail());
+            if(tempUser.isPresent())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "User.email is already in the database, Remove from request");
+            newUser.setPassword(this.convertToSHA256(newUser.getPassword()));
             return this.userRepository.save(newUser);
-            }
-            else{
-                //TODO 400 BadRequest
-                return newUser;
-            }
-
         }
-        else{
-            //TODO validate if id exists, 400 BadRequest
-            return newUser;
-        }
+        else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "madatory fields have not been provied");
     }
 
     /**
@@ -77,23 +96,32 @@ public class UserServices {
      */
     public User update(int id, User updateUser){
 
-        if(id>0){
+        if(id > 0){
             Optional<User> tempUser = this.show(id);
             if(tempUser.isPresent()){
                 if(updateUser.getNickname() != null)
                     tempUser.get().setNickname(updateUser.getNickname());
                 if(updateUser.getPassword() != null)
                     tempUser.get().setPassword( this.convertToSHA256(updateUser.getPassword()) );
-                return this.userRepository.save(tempUser.get());
+                if(updateUser.getRol() != null)
+                    tempUser.get().setRol( updateUser.getRol());
+                try {
+                    return this.userRepository.save(tempUser.get());
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "cannot be update due to constraint conflict");
+                }
             }
             else{
-                //TODO 404 NotFound
-                return updateUser;
+               throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "requested user does not exist in database");
             }
         }
         else{
-            //TODO 400 BadRequest, id <= 0
-            return updateUser;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "User.id cannot be negative");
         }
     }
 
@@ -103,7 +131,6 @@ public class UserServices {
      * @return
      */
     public boolean delete(int id){
-
         Boolean success = this.show(id).map(user ->{
             this.userRepository.delete(user);
             return true;

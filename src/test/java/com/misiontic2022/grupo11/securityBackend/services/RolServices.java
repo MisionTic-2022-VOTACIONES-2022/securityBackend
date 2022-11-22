@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.set;
 
 @Service
 /**
@@ -33,7 +34,11 @@ public class RolServices {
      * @return
      */
     public Optional<Rol> show(int id){
-        return this.rolRepository.findById(id);
+        Optional<Rol> rol this.rolRepository.findById(id);
+        if(rol.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User.id does not exist in db");
+        return rol;
     }
 
     /**

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.set;
 
 /**
  *
@@ -33,7 +34,10 @@ public class PermissionServices {
      * @return
      */
     public Optional<Permission> show(int id){
-        return this.permissionRepository.findById(id);
+        Optional<permission> permission = this.permissionRepository.findById(id);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User.id does not exist in db");
+        return user;
     }
 
     /**

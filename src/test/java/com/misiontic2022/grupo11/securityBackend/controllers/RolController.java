@@ -29,19 +29,16 @@ public class RolController {
     }
 
     @PostMapping("/insert")
-    @ResponseStatus(HttpStatus.CREATED)
     public Rol insertRol(@RequestBody Rol rol){
         return this.rolServices.create(rol);
     }
 
     @PutMapping("/update/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
     public Rol updateRol(@PathVariable("id") int id, @RequestBody Rol rol){
         return this.rolServices.update(id, rol);
     }
 
     @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteRol(@PathVariable("id") int id){
         return this.rolServices.delete(id);
     }

@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping("/by_nickname/{nickname}")
     public Optional<User> getUserByNickname(@PathVariable("nickname") String nickname){
-        retunr this.userServices.showByNickname(nickname);
+        return this.userServices.showByNickname(nickname);
     }
 
     @GetMapping("/by_email{email}")
@@ -39,7 +39,6 @@ public class UserController {
 
 
     @PostMapping("/insert")
-    @ResponseStatus(HttpStatus.CREATED)
     public User insertUser(@RequestBody User user){
         return this.userServices.create(user);
     }
@@ -50,13 +49,11 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
     public User updateUser(@PathVariable("id") int id, @RequestBody User user){
         return this.userServices.update(id, user);
     }
 
     @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteUser(@PathVariable("id") int id){
         return this.userServices.delete(id);
     }
